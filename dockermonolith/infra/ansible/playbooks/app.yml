@@ -1,0 +1,10 @@
+---
+- name: run app
+  hosts: app
+
+  tasks:
+  - name: run container
+    docker_container:
+      name: reddit
+      image: hokum83/otus-reddit:1.0
+      ports: "9292:9292"
