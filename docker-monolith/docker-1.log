@@ -1,0 +1,7 @@
+REPOSITORY                TAG       IMAGE ID       CREATED              SIZE
+hokum83/ubuntu-tmp-file   latest    74a238e22d86   About a minute ago   63.1MB
+nginx                     latest    b692a91e4e15   5 days ago           142MB
+ubuntu                    18.04     8d5df41c547b   5 days ago           63.1MB
+hello-world               latest    feb5d9fea6a5   10 months ago        13.3kB
+
+У образа нет состояния, он не привязан ни к какому хосту, образ является по сути шаблоном для запуска контейнера
