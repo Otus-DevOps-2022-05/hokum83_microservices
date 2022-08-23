@@ -1,6 +1,26 @@
 # hokum83_microservices
 hokum83 microservices repository
 
+# ДЗ-13
+Что сделано:
+- установлен линтер hadolint
+- скачен и распакован архив с исходниками приложений
+- созданы докерфайлы для каждого приложения, сделаны оптимизации согласно рекомендаций линтера, собраны образы
+- запущены контейнеры, выполнена проверка работы приложения
+- запущены контейнеры с переопределением переменных окружения через опцию -e:
+```
+docker run -d --network=reddit --network-alias=mypost_db --network-alias=mycomment_db mongo:latest
+docker run -d --network=reddit -e POST_DATABASE_HOST=mypost_db --network-alias=mypost hokum83/post:1.0
+docker run -d --network=reddit -e COMMENT_DATABASE_HOST=mycomment_db --network-alias=mycomment hokum83/comment:1.0
+docker run -d --network=reddit -e POST_SERVICE_HOST=mypost -e COMMENT_SERVICE_HOST=mycomment -p 9292:9292 hokum83/ui:1.0
+```
+- образ приложения ui переделан, выполнены рекомендации линтера, образ существенно уменьшился (до 411Мб против 762Мб в первой версии)
+- образ приложения ui пересобран на основе alpine linux - размер сократился до 148Мб
+- образ приложения comment так же был переведен на alpine и оптимизирован, размер стал 146Мб против 759Мб изначально
+- выполнен запуск приложения
+- создан docker volume, подключен к контейнеру БД
+- выполнен запуск контейнеров, написан пост, контейнеры были перезапущены - пост остался на месте
+
 # ДЗ-12
 Что сделано:
 - установлен docker и необходимое ПО, запущен первый контейнер
