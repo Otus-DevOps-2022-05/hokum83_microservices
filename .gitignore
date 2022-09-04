@@ -2,3 +2,5 @@ variables.json
 .terraform
 terraform.tfvars
 backend.tf
+.env
+.vscode
