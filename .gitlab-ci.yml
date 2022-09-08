@@ -19,7 +19,7 @@ build_job:
   image: docker/compose:latest
   script:
     - echo 'Building'
-    - cd ../src/
+    - cd src/
     - docker-compose up -d
 
 test_unit_job:
