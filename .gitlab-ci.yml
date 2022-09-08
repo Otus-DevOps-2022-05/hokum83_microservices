@@ -9,6 +9,13 @@ stages:
 
 variables:
   DATABASE_URL: 'mongodb://mongo/user_posts'
+  USERNAME: hokum83
+  PORT: 9292:9292
+  CMNTVER: 2.0
+  PSTVER: 1.0
+  UIVER: 3.0
+  MNGOVER: 3.2
+  COMPOSE_PROJECT_NAME: hokum83
 
 #before_script:
 #  - cd reddit
