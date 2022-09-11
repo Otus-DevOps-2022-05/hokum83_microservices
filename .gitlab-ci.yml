@@ -1,4 +1,4 @@
-image: ruby:2.4.2
+#image: ruby:2.4.2
 
 stages:
   - build
@@ -7,24 +7,25 @@ stages:
   - stage
   - production
 
-variables:
-  DATABASE_URL: 'mongodb://mongo/user_posts'
+#variables:
+#  DATABASE_URL: 'mongodb://mongo/user_posts'
 
-before_script:
-  - cd reddit
-  - bundle install
+#before_script:
+#  - cd reddit
+#  - bundle install
 
 build_job:
   stage: build
   environment:
     name: branch/$CI_COMMIT_REF_NAME
+  image: hokum83/otus-reddit:1.0  
   script:
     - echo 'Building'
 
 test_unit_job:
   stage: test
-  services:
-    - mongo:latest
+#  services:
+#    - mongo:latest
   script:
     - ruby simpletest.rb
 
