@@ -16,6 +16,8 @@ before_script:
 
 build_job:
   stage: build
+  before_script:
+    - echo 'Before Building'
   environment:
     name: branch/$CI_COMMIT_REF_NAME
   image: hokum83/otus-reddit:1.0  
@@ -24,8 +26,8 @@ build_job:
 
 test_unit_job:
   stage: test
-#  services:
-#    - mongo:latest
+  services:
+    - mongo:latest
   script:
     - ruby simpletest.rb
 
