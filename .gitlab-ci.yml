@@ -10,25 +10,16 @@ stages:
 variables:
   DATABASE_URL: 'mongodb://mongo/user_posts'
 
-#before_script:
-#  - cd reddit
-#  - bundle install
+before_script:
+  - cd reddit
+  - bundle install
 
 build_job:
   stage: build
-  image: docker/compose:latest
-  variables:
-    USERNAME: 'hokum83'
-    PORT: '9292:9292'
-    CMNTVER: '2.0'
-    PSTVER: '1.0'
-    UIVER: '3.0'
-    MNGOVER: '3.2'
-    COMPOSE_PROJECT_NAME: 'hokum83'
+  environment:
+    name: branch/$CI_COMMIT_REF_NAME
   script:
     - echo 'Building'
-    - cd src/
-    - docker-compose up -d
 
 test_unit_job:
   stage: test
