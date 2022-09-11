@@ -17,10 +17,10 @@ before_script:
 build_job:
   stage: build
   before_script:
-    - echo 'Before Building'
+    - echo 'No Before Building'
   environment:
     name: branch/$CI_COMMIT_REF_NAME
-  image: hokum83/otus-reddit:1.0  
+  image: hokum83/otus-reddit:1.0
   script:
     - echo 'Building'
 
