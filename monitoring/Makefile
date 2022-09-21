@@ -1,5 +1,5 @@
 #vars
-COMPOSE=../docker/docker-compose.yml
+COMPOSE=../docker/docker-compose-buggy.yml
 
 .PHONY: build push up start down destroy stop restart ps
 build:

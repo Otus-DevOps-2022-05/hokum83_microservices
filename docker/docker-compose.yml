@@ -4,84 +4,40 @@ services:
     image: mongo:${MNGOVER}
     volumes:
       - db:/data/db
-    networks:
-      - back_net
+
   ui:
     build: ../src/ui
     image: ${USERNAME}/ui:${UIVER}
     ports:
       - ${PORT}/tcp
-    networks:
-      - front_net
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: service.ui
+    environment:
+      - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
+
   post:
     build: ../src/post-py
     image: ${USERNAME}/post:${PSTVER}
     links:
       - "db:post_db"
-    networks:
-      - back_net
-      - front_net
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: service.post
+    environment:
+      - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
+
   comment:
     build: ../src/comment
     image: ${USERNAME}/comment:${CMNTVER}
     links:
       - "db:comment_db"
-    networks:
-      - back_net
-      - front_net
-  prometheus:
-    build: ../monitoring/prometheus/
-    image: ${USERNAME}/prometheus
-    ports:
-      - '9090:9090'
-    networks:
-      - back_net
-      - front_net
-    volumes:
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention=1d'
-  node-exporter:
-    image: prom/node-exporter:v0.15.2
-    user: root
-    networks:
-      - back_net
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
-  mongodb_exporter:
-    image: percona/mongodb_exporter:0.34.0
-    ports:
-      - '9216:9216'
-    networks:
-      - back_net
-    command:
-      - '--mongodb.uri=mongodb://db:27017'
-      - '--discovering-mode'
-      - '--mongodb.direct-connect'
-      - '--collect-all'
-  blackbox-exporter:
-    build: ../monitoring/blackbox_exporter/
-    image:  ${USERNAME}/blackbox_exporter:latest
-    ports:
-      - '9115:9115'
-    networks:
-      - back_net
-      - front_net
-    command:
-      - '--config.file=/config/blackbox.yml'
+    environment:
+      - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
 
 volumes:
   db:
-  prometheus_data:
-
-networks:
-  back_net:
-  front_net:
