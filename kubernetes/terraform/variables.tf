@@ -24,8 +24,14 @@ variable service_account_key_file {
   description = "key.json"
 }
 variable icount {
-  default     = "1"
+  default = "1"
 }
 variable ssh_user {
   default = "ubuntu"
+}
+variable workers_count {
+  description = "Worker nodes count"
+}
+variable masters_count {
+  description = "Master nodes count"
 }

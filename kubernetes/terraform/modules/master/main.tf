@@ -1,10 +1,11 @@
-resource "yandex_compute_instance" "k8s" {
+resource "yandex_compute_instance" "master" {
   count = var.icount
-  name  = "k8s-${count.index}"
+  name  = "k8s-master-${count.index}"
 
   labels = {
-    tags = "k8s"
+    tags = "master"
   }
+
   resources {
     cores  = 4
     memory = 4
@@ -37,7 +38,7 @@ resource "yandex_compute_instance" "k8s" {
   }
 
   provisioner "local-exec" {
-    command = "ansible-playbook -u ${var.ssh_user} -i '${self.network_interface.0.nat_ip_address},' --private-key ${var.private_key_path} ./modules/k8s/install-all.yml --ssh-common-args='-o StrictHostKeyChecking=no'"
+    command = "ansible-playbook -u ${var.ssh_user} -i '${self.network_interface.0.nat_ip_address},' --private-key ${var.private_key_path} ../ansible/playbooks/install-master.yml --ssh-common-args='-o StrictHostKeyChecking=no'"
   }
 
   connection {
