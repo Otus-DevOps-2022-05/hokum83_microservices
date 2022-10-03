@@ -1,0 +1,4 @@
+---
+- import_playbook: install-docker.yml
+- import_playbook: install-k8s.yml
+- import_playbook: deploy-master.yml
