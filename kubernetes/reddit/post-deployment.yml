@@ -1,18 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:
-  name: post-deployment
-spec:
-  replicas: 1
+metadata: # Блок метаданных деплоя
+  name: post
+  labels:
+    app: reddit
+    component: post
+spec: # Блок спецификации деплоя
+  replicas: 3
   selector:
     matchLabels:
-      app: post
-  template:
+      app: reddit
+      component: post
+  template: # Блок описания POD-ов
     metadata:
-      name: post
+      name: post-pod
       labels:
-        app: post
+        app: reddit
+        component: post
     spec:
       containers:
-      - image: chromko/post
+      - image: hokum83/post # Не забудьте подставить свой образ
         name: post
+        env:
+        - name: POST_DATABASE_HOST
+          value: post-db
