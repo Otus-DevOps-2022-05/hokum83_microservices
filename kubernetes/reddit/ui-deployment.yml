@@ -6,7 +6,7 @@ metadata: # Блок метаданных деплоя
     app: reddit
     component: ui
 spec: # Блок спецификации деплоя
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: reddit
