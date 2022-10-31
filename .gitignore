@@ -4,3 +4,4 @@ terraform.tfvars
 backend.tf
 .env
 .vscode
+kubernetes/charts/reddit/charts/*.tgz
