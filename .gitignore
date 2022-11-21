@@ -5,3 +5,4 @@ backend.tf
 .env
 .vscode
 kubernetes/Charts/reddit/charts/*.tgz
+kubernetes/Gitlab_ci

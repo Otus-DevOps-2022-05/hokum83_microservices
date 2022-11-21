@@ -12,7 +12,7 @@ resource "yandex_kubernetes_cluster" "yc-test-cluster" {
   network_id = var.network_id
 
   master {
-    version = "1.20"
+    version = "1.21"
     zonal {
       zone      = var.zone
       subnet_id = var.subnet_id
@@ -38,7 +38,7 @@ resource "yandex_kubernetes_node_group" "yc-test-node-group" {
   cluster_id  = yandex_kubernetes_cluster.yc-test-cluster.id
   name        = "yc-test-node"
   description = "My test k8s node group"
-  version     = "1.20"
+  version     = "1.21"
 
   labels = {
     env = "test"
