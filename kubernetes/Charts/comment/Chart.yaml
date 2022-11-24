@@ -1,0 +1,7 @@
+name: comment
+version: 1.0.0
+description: OTUS reddit application UI
+maintainers:
+  - name: Gultyaev Aleksey
+    email: hokum83@gmail.com
+appVersion: 1.0

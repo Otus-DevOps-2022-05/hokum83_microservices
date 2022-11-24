@@ -1,0 +1,117 @@
+image: alpine:latest
+
+stages:
+  - test
+  - staging
+  - production
+
+test:
+  stage: test
+  script:
+    - exit 0
+  only:
+    - triggers
+    - branches
+
+staging:
+  stage: staging
+  variables:
+    KUBE_NAMESPACE: staging
+    CI_REGISTRY: "index.docker.io"
+    CI_APPLICATION_REPOSITORY: $CI_REGISTRY/$CI_PROJECT_PATH
+    CI_APPLICATION_TAG: $CI_COMMIT_REF_SLUG
+    CI_CONTAINER_NAME: ci_job_build_${CI_JOB_ID}
+    name: $CI_ENVIRONMENT_SLUG
+  environment:
+    name: staging
+    url: http://staging
+  only:
+    refs:
+      - main
+  script:
+  # install_dependencies
+  - apk add -U openssl curl tar gzip bash ca-certificates git
+  - wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+  - wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r0/glibc-2.35-r0.apk
+  - apk add glibc-2.35-r0.apk --force-overwrite
+  - rm glibc-2.35-r0.apk
+  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+  - chmod 700 get_helm.sh
+  - ./get_helm.sh
+  - helm version --client
+  - curl -L -o /usr/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x /usr/bin/kubectl
+  - kubectl version --output=json
+  # ensure_namespace
+  - kubectl describe namespace "$KUBE_NAMESPACE" || kubectl create namespace "$KUBE_NAMESPACE"
+  # deploy
+  - echo $KUBE_NAMESPACE
+  - export track="${1-stable}"
+  - >
+    if [[ "$track" != "stable" ]]; then
+      name="$name-$track"
+    fi
+  - helm dep build reddit
+  - >
+    helm upgrade --install \
+      --wait \
+      --set ui.ingress.host="$host" \
+      --set ui.image.tag="$(curl https://gitlab.84.201.134.164.sslip.io/$CI_PROJECT_NAMESPACE/ui/raw/main/VERSION)" \
+      --set post.image.tag="$(curl https://gitlab.84.201.134.164.sslip.io/$CI_PROJECT_NAMESPACE/post/raw/main/VERSION)" \
+      --set comment.image.tag="$(curl https://gitlab.84.201.134.164.sslip.io/$CI_PROJECT_NAMESPACE/comment/raw/main/VERSION)" \
+      --namespace="$KUBE_NAMESPACE" \
+      --version="$CI_PIPELINE_ID-$CI_JOB_ID" \
+      "$name" \
+      reddit
+
+production:
+  stage: production
+  variables:
+    KUBE_NAMESPACE: production
+    CI_REGISTRY: "index.docker.io"
+    CI_APPLICATION_REPOSITORY: $CI_REGISTRY/$CI_PROJECT_PATH
+    CI_APPLICATION_TAG: $CI_COMMIT_REF_SLUG
+    CI_CONTAINER_NAME: ci_job_build_${CI_JOB_ID}
+    name: $CI_ENVIRONMENT_SLUG
+  environment:
+    name: production
+    url: http://production
+  when: manual
+  only:
+    refs:
+      - main
+  script:
+  # install_dependencies
+  - apk add -U openssl curl tar gzip bash ca-certificates git
+  - wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+  - wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r0/glibc-2.35-r0.apk
+  - apk add glibc-2.35-r0.apk --force-overwrite
+  - rm glibc-2.35-r0.apk
+  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+  - chmod 700 get_helm.sh
+  - ./get_helm.sh
+  - helm version --client
+  - curl -L -o /usr/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x /usr/bin/kubectl
+  - kubectl version --output=json
+  # ensure_namespace
+  - kubectl describe namespace "$KUBE_NAMESPACE" || kubectl create namespace "$KUBE_NAMESPACE"
+  # deploy
+  - echo $KUBE_NAMESPACE
+  - export track="${1-stable}"
+  - >
+    if [[ "$track" != "stable" ]]; then
+      name="$name-$track"
+    fi
+  - helm dep build reddit
+  - >
+    helm upgrade --install \
+      --wait \
+      --set ui.ingress.host="$host" \
+      --set ui.image.tag="$(curl https://gitlab.84.201.134.164.sslip.io/$CI_PROJECT_NAMESPACE/ui/raw/main/VERSION)" \
+      --set post.image.tag="$(curl https://gitlab.84.201.134.164.sslip.io/$CI_PROJECT_NAMESPACE/post/raw/main/VERSION)" \
+      --set comment.image.tag="$(curl https://gitlab.84.201.134.164.sslip.io/$CI_PROJECT_NAMESPACE/comment/raw/main/VERSION)" \
+      --namespace="$KUBE_NAMESPACE" \
+      --version="$CI_PIPELINE_ID-$CI_JOB_ID" \
+      "$name" \
+      reddit
